@@ -1,4 +1,5 @@
 # coding=UTF-8
+import os
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,7 +10,9 @@ import time
 import utils
 
 def main():
-    driver = webdriver.Chrome()
+    driver_path = os.path.dirname(os.path.abspath(__file__)) + "/chromedriver"
+    print driver_path
+    driver = webdriver.Chrome(driver_path)
     driver.get("https://tw.event.beanfun.com/mabinogi/e20170511/index.aspx")
     print driver.title
     user = utils.load_account("account.json")
@@ -30,7 +33,7 @@ def login(driver, user):
     password = driver.find_element_by_id("t_Password")
     password.send_keys(user["password"])
     login_btn.click()
-    
+
     # Choose game account
     game_account_selector = driver.find_element_by_id("ddl_service_account")
     for option in game_account_selector.find_elements_by_tag_name('option'):
