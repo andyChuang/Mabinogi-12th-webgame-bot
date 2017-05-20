@@ -18,28 +18,29 @@
 3. 同目錄下建立`account.json`，格式如下：
 ```
 [
-{
-"account": "帳號1",
-"password": "密碼1",
-"game_account": "遊戲帳號1"
-},
-{
-"account": "帳號2",
-"password": "密碼2",
-"game_account": "遊戲帳號2"
-},
-.
-.
-.
-{
-"account": "帳號N",
-"password": "密碼N",
-"game_account": "遊戲帳號N"
-}
+    {
+        "account": "帳號1",
+        "password": "密碼1",
+        "game_account": "遊戲帳號1"
+    },
+    {
+        "account": "帳號2",
+        "password": "密碼2",
+        "game_account": "遊戲帳號2"
+    },
+    .
+    .
+    .
+    {
+        "account": "帳號N",
+        "password": "密碼N",
+        "game_account": "遊戲帳號N"
+    }
 ]
 ```
-5. python play.py --game_type login => 登入簽到
-python play.py --game_type dice => 骰子遊戲
+5. python play.py 
+    - --game_type login => 登入簽到
+    - --game_type dice => 骰子遊戲
 
 ## To-do
 1. 補完所有小遊戲
