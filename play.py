@@ -1,5 +1,5 @@
 # coding=UTF-8
-import os
+import os, argparse
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,17 +9,36 @@ import random
 import time
 import utils
 
-def main():
-    driver_path = os.path.dirname(os.path.abspath(__file__)) + "/chromedriver"
-    print driver_path
-    driver = webdriver.Chrome(driver_path)
-    driver.get("https://tw.event.beanfun.com/mabinogi/e20170511/index.aspx")
-    print driver.title
-    user = utils.load_account("account.json")
+MABINOGI_URL = "https://tw.event.beanfun.com/mabinogi/e20170511/index.aspx"
 
-    dice_game(driver, user)
+def main(game_type):
+    driver_path = os.path.dirname(os.path.abspath(__file__)) + "/chromedriver"
+    users = utils.load_account("account.json")
+
+    for user in users:
+        driver = get_driver(driver_path)
+        start_new_session(driver, user, game_type)
+        stop_session(driver)
+
+def start_new_session(driver, user, game_type):
+    driver.get(MABINOGI_URL)
+    game.get(game_type, login)(driver, user)
+
+def stop_session(driver):
+    driver.close()
+
+def get_driver(driver_path):
+    driver = webdriver.Chrome(driver_path)
+    return driver
 
 def login(driver, user):
+    # Use dice game as login entry page
+    dice_entry = driver.execute_script("return $('a[href=\"Dice.aspx\"]')[0]")
+    dice_entry.click()
+    login_routine(driver, user)
+    time.sleep(3)
+
+def login_routine(driver, user):
     # Login elements is in iframe, should switch to it
     login_iframe = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "ifmForm1"))
@@ -49,7 +68,7 @@ def dice_game(driver, user):
 
     # If not logon
     try:
-        login(driver, user)
+        login_routine(driver, user)
 
         while i_have_coin_haha(driver):
             # Start to dice
@@ -67,7 +86,7 @@ def dice_game(driver, user):
         print "No coin."
 
     finally:
-        print "Game over."
+        print "User %s game over." % user["account"]
 
 def i_have_coin_haha(driver):
     coin_field = WebDriverWait(driver, 10).until(
@@ -77,4 +96,17 @@ def i_have_coin_haha(driver):
     return int(coin) > 0
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Compile smart contracts')
+
+    parser.add_argument('--game_type', \
+                        help='Its value is one of %s and %s' % ('login', 'dice'),
+                        default='login')
+
+    args = parser.parse_args()
+
+    game = {
+        "login": login,
+        "dice": dice_game
+    }
+
+    main(args.game_type)
