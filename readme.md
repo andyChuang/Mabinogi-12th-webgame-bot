@@ -45,3 +45,6 @@
 ## To-do
 1. 補完所有小遊戲
 2. 多帳號同時進行 (20170520 done)
+
+## License
+See the LICENSE file for license rights and limitations (MIT).
