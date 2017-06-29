@@ -88,6 +88,45 @@ def dice_game(driver, user):
     finally:
         print "User %s game over." % user["account"]
 
+def redeem_all_luckyeggs(driver, user):
+    ferris_wheel = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "gacha_ferriswheel"))
+    )
+    ferris_wheel.click()
+
+    try:
+        login_routine(driver, user)
+
+        redeem_btn = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//a[@href='LuckyEgg_Exchange.aspx']"))
+        )
+        driver.execute_script("arguments[0].click()", redeem_btn)
+
+        while(True):
+            redeem_first_luckyegg(driver)
+    except Exception as e:
+        print "It seems there's no luckyegg of this user. Go next."
+
+
+def redeem_first_luckyegg(driver):
+        luckyegg = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located(\
+                (By.ID, "ItemListRepeater_ctl00_DoExchange"))
+        )
+        driver.execute_script("arguments[0].click()", luckyegg)
+
+        submit_btn = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//a[@id='btnExchange']"))
+        )
+        driver.execute_script("arguments[0].click()", submit_btn)
+        WebDriverWait(driver, 5).until(EC.alert_is_present())
+        alert = driver.switch_to.alert
+        alert.accept()
+
+        redeem_btn = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "btnExchange")))
+        driver.execute_script("arguments[0].click()", redeem_btn)
+
 def i_have_coin_haha(driver):
     coin_field = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CLASS_NAME, "coin"))
@@ -106,7 +145,8 @@ if __name__ == '__main__':
 
     game = {
         "login": login,
-        "dice": dice_game
+        "dice": dice_game,
+        "redeem": redeem_all_luckyeggs
     }
 
     main(args.game_type)
